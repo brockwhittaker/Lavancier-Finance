@@ -1,0 +1,137 @@
+/*
+bg: #1B2930,
+darker-blue: #15242D
+*/
+
+* {
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: #1C303B;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+
+  width: 300px;
+  height: 100vh;
+
+  overflow-y: scroll;
+
+  background-color: #15242D;
+}
+
+.wrapper {
+  padding: 20px;
+}
+
+.wrapper #new_alert {
+  margin: 10px 0px;
+
+  text-align: right;
+}
+
+.tickers .ind-ticker {
+  margin: 0;
+  padding: 5px 3px;
+  border-radius: 4px;
+}
+
+.tickers .ind-ticker.selected {
+  background-color: rgba(255,255,255,0.1);
+}
+
+#sidebar .ticker-name {
+  float: left;
+}
+
+#sidebar .ticker-price,
+#sidebar .ticker-change {
+  float: right;
+  font-weight: 300;
+}
+
+#sidebar .ticker-price {
+  margin-right: 20px;
+}
+
+#sidebar .ticker-change {
+  width: 55px;
+  background-color: #69B87D;
+  padding: 2px 4px;
+  border-radius: 4px;
+
+  text-align: center;
+}
+
+#sidebar .ticker-change.red-block {
+  background-color: #B86969;
+}
+
+/* --- body css --- */
+
+/* -- chart css -- */
+#body #main_chart {
+}
+
+#chart_container div {
+  background-color: #DBD8D1;
+
+  padding: 0px 20px;
+  border-radius: 4px;
+}
+
+#body #chart_container {
+  position: relative;
+}
+
+
+#body {
+  position: absolute;
+  width: calc(100vw - 300px);
+  top: 0;
+  left: 300px;
+}
+
+#body .stat-container {
+  width: calc(100% - 40px);
+  padding: 20px;
+
+  border-radius: 4px;
+
+  background-color: #15242D;
+}
+
+.stat-container .ind-stat {
+  display: inline-block;
+  vertical-align: top;
+
+  width: 100px;
+
+  padding: 10px;
+}
+
+.stat-container .ind-stat.large {
+  white-space: nowrap;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  width: calc(220px + 4px); /* because css display: inline-block adds a few px. */
+}
+
+.ind-stat .stat-title {
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.ind-stat .stat-value {
+  font-size: 1.2em;
+  font-weight: 300;
+}

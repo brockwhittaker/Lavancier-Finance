@@ -1,0 +1,27 @@
+.white {
+  color: #EEE;
+}
+
+.clear-float {
+  clear: both;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.light {
+  font-weight: 300;
+}
+
+.m-t-0 {
+  margin-top: 0px;
+}
+
+.red {
+  color: #B86969;
+}
+
+.green {
+  color: #69B87D;
+}
