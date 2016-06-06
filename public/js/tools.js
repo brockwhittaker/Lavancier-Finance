@@ -1096,11 +1096,13 @@ var $ = (function () {
       ----- **/
     },
 
-    rollingVolatility: function (arr, period) {
+    rollingVolatility: function (arr, period, rel_time) {
+      var mult = Math.sqrt(251 * (1 / (rel_time || 1)));
+
       return this.movingSample(arr, period, function (slice) {
         /* utilizes the movingSample property. */
 
-        return this.standardDeviation(slice, true) * 15.84;
+        return this.standardDeviation(slice, true) * mult;
         /* return the volatility of the trailing period. */
       });
 

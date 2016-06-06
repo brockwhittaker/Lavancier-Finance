@@ -6,10 +6,34 @@ class UI {
 
     if (data) {
       list.forEach((stat, i) => {
+        let addClass = (typeof stat[3] == "function") ? stat[3](data[stat[1]]) : "";
+
         let ind_stat = $.create(`
           <div class='ind-stat ${(stat[2]) ? "large" : ""}'>
             <div class='stat-title'>${stat[0]}</div>
-            <div class='stat-value'>${(typeof data[stat[1]] !== "undefined" && data[stat[1]] !== null) ? data[stat[1]] : "-"}</div>
+            <div class='stat-value ${addClass}'>${(typeof data[stat[1]] !== "undefined" && data[stat[1]] !== null) ? data[stat[1]] : "-"}</div>
+          </div>
+        `);
+
+        $stat_container.append(ind_stat);
+      });
+    }
+  }
+
+  drawQuantStats (data, list) {
+    let $stat_container = $("#body #quantitative");
+
+    $stat_container.html("");
+
+    if (data) {
+      list.forEach((stat, i) => {
+        console.log(stat, data[stat[1]]);
+        let addClass = (typeof stat[3] == "function") ? stat[3](data[stat[1]]) : "";
+
+        let ind_stat = $.create(`
+          <div class='ind-stat ${(stat[2]) ? "large" : ""}'>
+            <div class='stat-title'>${stat[0]}</div>
+            <div class='stat-value ${addClass}'>${(typeof data[stat[1]] !== "undefined" && data[stat[1]] !== null) ? data[stat[1]] : "-"}</div>
           </div>
         `);
 
@@ -32,7 +56,7 @@ class UI {
             ${o.symbol}
           </div>
           <div class="ticker-change ${(parseFloat(o.percentChange) < 0) ? "red-block" : ""}">
-            ${o.percentChange !== null ? o.percentChange.toFixed(2) + "%" : "-"}
+            ${o.percentChange !== null ? o.percentChange : "-"}
           </div>
           <div class="ticker-price">
             ${o.ask}
@@ -45,7 +69,7 @@ class UI {
               ${o.symbol}
             </div>
             <div class="ticker-change ${(parseFloat(o.percentChange) < 0) ? "red-block" : ""}">
-              ${o.percentChange !== null ? o.percentChange.toFixed(2) + "%" : "-"}
+              ${o.percentChange !== null ? o.percentChange : "-"}
             </div>
             <div class="ticker-price">
               ${o.ask}

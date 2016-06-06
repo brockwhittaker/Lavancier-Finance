@@ -1,5 +1,12 @@
 let fs = require("fs");
 
+let widthQuery = (min, max, callback) => {
+  if (window.innerWidth > min &&
+      window.innerWidth < max) {
+        callback();
+  }
+};
+
 (function () {
   let clearChart = (symbol) => {
     let canvas = $("#chart_container canvas").el(0, true);
@@ -32,7 +39,7 @@ let fs = require("fs");
       }
     });
 
-    ticker.pricing.fetch(function (data, isNew) {
+    ticker.pricing.fetch(function (data, quant, list, isNew) {
       if (data) {
         let open = data.indicators.quote[0].open.filter(function (o, i) {
           return (i % 5 === 0);
@@ -47,6 +54,10 @@ let fs = require("fs");
         });
 
         chart(open, time, data.meta.symbol, isNew);
+      }
+
+      if (quant) {
+        ui.drawQuantStats(quant, list);
       }
     });
   };
@@ -88,6 +99,10 @@ let chart = (data, time, ticker, isNew) => {
   };
 
   var canvas = document.createElement("canvas");
+
+  widthQuery(0, 1000, () => {
+    canvas.height = 300;
+  });
 
 
   $container.html("");

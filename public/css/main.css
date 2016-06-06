@@ -1,6 +1,6 @@
 /*
 bg: #1B2930,
-darker-blue: #15242D
+darker-blue: #02242f
 */
 
 * {
@@ -11,7 +11,7 @@ darker-blue: #15242D
 
 body {
   margin: 0;
-  background-color: #1C303B;
+  background-color: #09323b;
 }
 
 #sidebar {
@@ -24,7 +24,7 @@ body {
 
   overflow-y: scroll;
 
-  background-color: #15242D;
+  background-color: #02242f;
 }
 
 .wrapper {
@@ -45,6 +45,44 @@ body {
 
 .tickers .ind-ticker.selected {
   background-color: rgba(255,255,255,0.1);
+}
+
+#sidebar #add_new input[type=text] {
+  width: calc(100% - 50px - 10px);
+  padding: 5px;
+
+  font-size: 1em;
+  font-weight: 500;
+
+  color: #FAFAFA;
+  background-color: #0C1921;
+
+  border: none;
+  outline: none;
+
+  float: left;
+}
+
+#sidebar #add_new #submit {
+  width: calc(50px);
+
+  font-size: 1.25em;
+  font-weight: 500;
+
+  color: #FAFAFA;
+  background-color: #0C1921;
+
+  border: none;
+  outline: none;
+
+  float: left;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#sidebar #add_new #submit:hover {
+  background-color: #09323b;
 }
 
 #sidebar .ticker-name {
@@ -105,7 +143,7 @@ body {
 
   border-radius: 4px;
 
-  background-color: #15242D;
+  background-color: #02242f;
 }
 
 .stat-container .ind-stat {
@@ -134,4 +172,8 @@ body {
 .ind-stat .stat-value {
   font-size: 1.2em;
   font-weight: 300;
+}
+
+.float-left {
+  float: left;
 }
