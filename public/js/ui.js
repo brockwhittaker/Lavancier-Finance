@@ -27,7 +27,6 @@ class UI {
 
     if (data) {
       list.forEach((stat, i) => {
-        console.log(stat, data[stat[1]]);
         let addClass = (typeof stat[3] == "function") ? stat[3](data[stat[1]]) : "";
 
         let ind_stat = $.create(`
@@ -42,8 +41,13 @@ class UI {
     }
   }
 
-  drawSidebar (data) {
-    let $sidebar = $("#sidebar .tickers");
+  drawSidebar (data, sel) {
+    let $sidebar;
+    if (sel) {
+      $sidebar = $(sel);
+    } else {
+      $sidebar = $("#sidebar .tickers");
+    }
 
     for (var x in data) {
       let o = data[x];
@@ -80,5 +84,9 @@ class UI {
         $sidebar.append(ind_ticker);
       }
     }
+  }
+
+  drawRecent (data) {
+    this.drawSidebar(data, "#sidebar .recent");
   }
 }

@@ -1,11 +1,12 @@
 class CurrentStats {
-  constructor (ticker) {
-    this.tickers = [ticker].concat(["^DJI", "^GSPC", "^IXIC", "AAPL", "GOOGL", "MSFT", "WMT", "TGT", "AA", "MO", "TSCO", "GM", "GE", "F", "AAL"]);
+  constructor (watchlist) {
+    this.tickers = watchlist;
 
     this._url = `https://query.yahooapis.com/v1/public/yql?q=select * from yahoo.finance.quotes where symbol in ("##default##")&format=json&diagnostics=true&env=store://datatables.org/alltableswithkeys&callback=`;
   }
 
-  fetch (callback) {
+  fetch (ticker, callback) {
+
     let readStamp = () => {
       fs.readFile("data/api/query.txt", "utf8", (err, data) => {
         try {
@@ -14,9 +15,9 @@ class CurrentStats {
           data = {};
           console.log(er);
           //query(data);
+        } finally {
+          query(data);
         }
-
-        query(data);
       });
     };
 
@@ -44,19 +45,36 @@ class CurrentStats {
       return storage.tickers[symbol];
     };
 
+    let drawSidebar = (data, sidebar_list) => {
+      let sidebar = {};
+
+      for (let o in data) {
+        if (sidebar_list.indexOf(o) > -1) {
+          sidebar[o] = data[o];
+        }
+      }
+
+      ui.drawSidebar(sidebar);
+      ui.drawRecent(data);
+    };
+
     /* Description:
        - Queries the Yahoo! Finance API for ticker results, then runs the `read`
          function to get past information, and write to overwrite with new info.
-       - The first update is to fill in old infomration temporarily until new
+       - The first update is to fill in old information temporarily until new
          info is retrieved from the API.
     */
     let query = (storage) => {
+      // create new UI instance
+      let ui = new UI();
+
       // replace the template URL with a ticker string (eg. `AAPL,SPY,CRM`).
       this._url = this._url.replace("##default##", this.tickers.join(","));
 
       // run a callback to fill in with old stock information while loading.
-      callback(writeStamp(storage, [], this.tickers[0]), this.orderedList());
-      new UI().drawSidebar(storage.tickers);
+      callback(writeStamp(storage, [], ticker), this.orderedList());
+
+      drawSidebar(storage.tickers, this.tickers);
 
       // send of a request to the API.
       $.ajax({
@@ -66,14 +84,14 @@ class CurrentStats {
           response = JSON.parse(response).query.results.quote;
           response = this.process(response);
 
-          let showcase = writeStamp(storage, response, this.tickers[0]);
-          new UI().drawSidebar(response);
+          let showcase = writeStamp(storage, response, ticker);
+          drawSidebar(response, this.tickers);
 
           callback(showcase, this.orderedList());
         },
         error: () => {
-          callback(writeStamp(storage, [], this.tickers[0]), this.orderedList());
-          new UI().drawSidebar(storage.tickers);
+          callback(writeStamp(storage, [], ticker), this.orderedList());
+          drawSidebar(response, this.tickers);
         }
       });
 

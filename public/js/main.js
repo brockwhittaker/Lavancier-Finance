@@ -1,5 +1,8 @@
 let fs = require("fs");
 
+let watchlist = new Watchlist();
+let ui = new UI();
+
 let widthQuery = (min, max, callback) => {
   if (window.innerWidth > min &&
       window.innerWidth < max) {
@@ -23,43 +26,46 @@ let widthQuery = (min, max, callback) => {
   };
 
   window.fetchQuote = (symbol) => {
-    let ticker = {
-      stats: new CurrentStats(symbol),
-      pricing: new HistoricalPricing(symbol)
-    };
 
-    let ui = new UI();
+    // retrieve the current watchlist of stocks..
+    watchlist.retrieve((watchlist) => {
+      let ticker = {
+        stats: new CurrentStats(watchlist),
+        pricing: new HistoricalPricing(symbol)
+      };
 
-    // clear the old chart to not confuse users while new one loads..
-    clearChart(symbol);
+      // clear the old chart to not confuse users while new one loads..
+      clearChart(symbol);
 
-    ticker.stats.fetch(function (data, list) {
-      if (data) {
-        ui.drawTickerStats(data, list);
-      }
+      ticker.stats.fetch(symbol, function (data, list) {
+        if (data) {
+          ui.drawTickerStats(data, list);
+        }
+      });
+
+      ticker.pricing.fetch(function (data, quant, list, isNew) {
+        if (data) {
+          let open = data.indicators.quote[0].open.filter(function (o, i) {
+            return (i % 5 === 0);
+          });
+
+          let time = data.timestamp.filter(function (o, i) {
+            return (i % 5 === 0);
+          }).map(function (o) {
+            let d = $.moment(new Date(o * 1000));
+
+            return `${d.month} ${d.d} ${d.h}:${d.fmt.mm}`;
+          });
+
+          chart(open, time, data.meta.symbol, isNew);
+        }
+
+        if (quant) {
+          ui.drawQuantStats(quant, list);
+        }
+      });
     });
 
-    ticker.pricing.fetch(function (data, quant, list, isNew) {
-      if (data) {
-        let open = data.indicators.quote[0].open.filter(function (o, i) {
-          return (i % 5 === 0);
-        });
-
-        let time = data.timestamp.filter(function (o, i) {
-          return (i % 5 === 0);
-        }).map(function (o) {
-          let d = $.moment(new Date(o * 1000));
-
-          return `${d.month} ${d.d} ${d.h}:${d.fmt.mm}`;
-        });
-
-        chart(open, time, data.meta.symbol, isNew);
-      }
-
-      if (quant) {
-        ui.drawQuantStats(quant, list);
-      }
-    });
   };
 
   fetchQuote("AAPL");
@@ -139,5 +145,17 @@ let chart = (data, time, ticker, isNew) => {
     $this.addClass("selected");
 
     fetchQuote(ticker);
+  });
+
+  $("#add_new #submit").on("click", function () {
+    let $input = $(this).parent().find("input"),
+        val = $input.val();
+
+    if (val.length > 0 && /^[A-z0-9\^\.]+/g.test(val)) {
+      watchlist.add(val, () => {
+        fetchQuote(val);
+        $input.val("");
+      });
+    }
   });
 })();

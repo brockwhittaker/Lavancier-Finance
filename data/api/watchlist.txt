@@ -1,0 +1,1 @@
+["^GSPC","AAPL","CRM","TGT","FB","GPRO","AMZN","TWTR","LNKD"]

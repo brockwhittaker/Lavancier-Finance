@@ -519,7 +519,7 @@ var $ = (function () {
         return this;
       },
       val: function (val) {
-        if (!_utils.isset(val)) {
+        if (!_utils.isset(val) && val !== "") {
           return this.el(0, true).value;
         } else {
           this.each(function () {
