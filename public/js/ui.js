@@ -54,6 +54,10 @@ class UI {
 
       let symbol = o.symbol.replace(/[^A-Za-z0-9]/g, "");
 
+      /* because of this, no symbol will repeat itself if it exists elsewhere.
+      *  therefore, if AAPL is in the "watchlist", it won't also be in the
+         "recent" category.
+      */
       if ($(`[name=${symbol}]`).length > 0) {
         $(`[name=${symbol}]`).html(`
           <div class="ticker-name">
