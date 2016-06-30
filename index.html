@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Lavancier Finance</title>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" media="screen" title="no title" charset="utf-8">
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,300italic,400italic,500,700,900' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="public/css/oo.css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="public/css/main.css" media="screen" title="no title" charset="utf-8">
@@ -16,7 +17,7 @@
 
         <div id="add_new">
           <input type="text" name="name" value="" placeholder="Add Ticker">
-          <button id="submit"><span style='position: relative; top: -2px'>&gt;</span></button>
+          <button type="button" id="submit"><span style='position: relative; top: -2px'>&gt;</span></button>
         </div>
 
         <div class="clear-float"></div>
@@ -27,24 +28,72 @@
     </div>
 
     <div id="body">
+      <nav>
+        <div class="search-container">
+          <input id="ticker_query" type="text" name="name" value="" placeholder="Search Ticker">
+          <i id="submit_query" class="fa fa-search"></i>
+        </div>
+      </nav>
+
       <div class="wrapper">
-        <h2 class="white m-t-0 light float-left">Daily Chart</h2>
 
-        <div id="new_alert"></div>
+        <div class="chart-wrapper">
+          <h2 class="white m-t-0 light float-left">Daily Chart</h2>
 
-        <div class="clear-float"></div>
+          <div id="new_alert"></div>
+          <div class="clear-float"></div>
 
-        <div id="chart_container">
-          <div></div>
+          <div id="chart_container">
+            <div></div>
+          </div>
+
+          <div class="chart-times">
+            <ol>
+              <li data-unit="5d">5d</li>
+              <li data-unit="1m">1m</li>
+              <li data-unit="3m">3m</li>
+              <li data-unit="ytd">ytd</li>
+              <li data-unit="1y">1y</li>
+              <li data-unit="2y">2y</li>
+              <li data-unit="5y">5y</li>
+              <li data-unit="10y">10y</li>
+            </ol>
+          </div>
         </div>
 
-        <h2 class="white light">Fundamentals</h2>
+        <div class="sentiment-container">
+          <h2 class="white light">Sentiment</h2>
+          <div id="sentiment" class="stat-container white">
+            <h2 id="question_ticker" class="float-left">{{ticker}}</h2>
 
-        <div id="fundamentals" class="stat-container white"></div>
+            <div class="float-right">
+              <div class="trend-box green-shift">
+                <i class="fa fa-chevron-up"></i>
+              </div>
 
-        <h2 class="white light">Quantitative</h2>
+              <div class="trend-box red">
+                <i class="fa fa-chevron-down"></i>
+              </div>
+            </div>
 
-        <div id="quantitative" class="stat-container white"></div>
+            <div class='clear-float'></div>
+
+            <div id="question_body">
+              Do you think {{ticker}} will go up or down within the next trading week?
+            </div>
+          </div>
+        </div>
+
+        <div class="fundamentals-container">
+          <h2 class="white light">Fundamentals</h2>
+          <div id="fundamentals" class="stat-container white"></div>
+        </div>
+
+        <div class="quantitative-contianer">
+          <h2 class="white light">Quantitative</h2>
+          <div id="quantitative" class="stat-container white"></div>
+        </div>
+
       </div>
     </div>
   </body>
@@ -57,5 +106,9 @@
   <script src="public/js/retrieve-watchlist.js" charset="utf-8"></script>
   <script src="public/js/current-finance.js" charset="utf-8"></script>
   <script src="public/js/history-finance.js" charset="utf-8"></script>
+  <script src="public/js/write.js" charset="utf-8"></script>
+  <script src="public/js/chart.js" charset="utf-8"></script>
+  <script src="public/js/fetch.js" charset="utf-8"></script>
   <script src="public/js/main.js" charset="utf-8"></script>
+  <script src="public/js/events.js" charset="utf-8"></script>
 </html>

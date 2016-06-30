@@ -3,6 +3,11 @@ let fs = require("fs");
 let watchlist = new Watchlist();
 let ui = new UI();
 
+let meta = {
+  ticker: "AAPL",
+  unit: "1y"
+};
+
 let widthQuery = (min, max, callback) => {
   if (window.innerWidth > min &&
       window.innerWidth < max) {
@@ -11,151 +16,42 @@ let widthQuery = (min, max, callback) => {
 };
 
 (function () {
-  let clearChart = (symbol) => {
-    let canvas = $("#chart_container canvas").el(0, true);
-    if (canvas) {
-      canvas.width = canvas.width;
+  window.fetchQuote = (symbol, unit) => {
+    var fetch = new Fetch(symbol, unit);
+    var chart = new ChartRender("#chart_container", "#new_alert");
+    var finance = new CurrentFinance();
+    var ui = new UI();
 
-      let context = canvas.getContext("2d");
+    meta.ticker = symbol;
+    meta.unit = unit;
 
-      context.font = '300 32pt Roboto';
-      context.textAlign = 'center';
-      context.fillStyle = '#413C39';
-      context.fillText(`Loading ${symbol}...`, canvas.width / 2, canvas.height / 2);
-    }
-  };
+    chart.clear(symbol);
 
-  window.fetchQuote = (symbol) => {
-
-    // retrieve the current watchlist of stocks..
-    watchlist.retrieve((watchlist) => {
-      let ticker = {
-        stats: new CurrentStats(watchlist),
-        pricing: new HistoricalPricing(symbol)
-      };
-
-      // clear the old chart to not confuse users while new one loads..
-      clearChart(symbol);
-
-      ticker.stats.fetch(symbol, function (data, list) {
-        if (data) {
-          ui.drawTickerStats(data, list);
-        }
-      });
-
-      ticker.pricing.fetch(function (data, quant, list, isNew) {
-        if (data) {
-          let open = data.indicators.quote[0].open.filter(function (o, i) {
-            return (i % 5 === 0);
-          });
-
-          let time = data.timestamp.filter(function (o, i) {
-            return (i % 5 === 0);
-          }).map(function (o) {
-            let d = $.moment(new Date(o * 1000));
-
-            return `${d.month} ${d.d} ${d.h}:${d.fmt.mm}`;
-          });
-
-          chart(open, time, data.meta.symbol, isNew);
-        }
-
-        if (quant) {
-          ui.drawQuantStats(quant, list);
-        }
-      });
+    fetch.getHistoricalData((price, time, quant, list, symbol) => {
+      chart.draw(price, time, symbol, true);
+      ui.drawQuantStats(quant, list);
     });
 
+    fetch.getCurrentData((data) => {
+      var formatted = finance.format(data[symbol]);
+      var list = finance.list();
+
+      ui.drawTickerStats(formatted, list);
+    });
   };
 
-  fetchQuote("AAPL");
-})();
+  window.fetchChart = (symbol, unit) => {
+    var fetch = new Fetch(symbol, unit);
+    var chart = new ChartRender("#chart_container", "#new_alert");
+    var ui = new UI();
 
-let chart = (data, time, ticker, isNew) => {
-  let $container = $("#chart_container div");
-  var settings = {
-      labels: time,
-      datasets: [
-          {
-              label: `${ticker} Price`,
-              fill: false,
-              lineTension: 0.1,
-              backgroundColor: "rgba(28, 148, 148, 0.4)",
-              borderColor: "rgba(28, 148, 148, 0.8)",
-              borderCapStyle: 'butt',
-              borderDash: [],
-              borderDashOffset: 0.0,
-              borderJoinStyle: 'miter',
-              pointBorderColor: "rgba(28, 148, 148, 1)",
-              pointBackgroundColor: "#fff",
-              pointBorderWidth: 1,
-              pointHoverRadius: 5,
-              pointHoverBackgroundColor: "rgba(75,192,192,1)",
-              pointHoverBorderColor: "rgba(220,220,220,1)",
-              pointHoverBorderWidth: 2,
-              pointRadius: 1,
-              pointHitRadius: 10,
-              data: data,
-          }
-      ]
+    chart.clear(symbol);
+
+    fetch.getHistoricalData((price, time, quant, list, symbol) => {
+      chart.draw(price, time, symbol, true);
+      ui.drawQuantStats(quant, list);
+    });
   };
 
-  Chart.defaults.global.tooltips.callbacks.label = function (data) {
-    return "$" + data.yLabel.toFixed(2);
-  };
-
-  var canvas = document.createElement("canvas");
-
-  widthQuery(0, 1000, () => {
-    canvas.height = 300;
-  });
-
-
-  $container.html("");
-  $("#new_alert").html(`&#9679; ${isNew ? "Updated Now" : "Cached Data"}`);
-  $("#new_alert")
-    .addClass(isNew ? "green" : "red")
-    .removeClass(isNew ? "red" : "green");
-
-  $container.el(0, true).appendChild(canvas);
-
-  var myLineChart = new Chart(canvas.getContext("2d"), {
-      type: 'line',
-      data: settings,
-      options: {
-        scales: {
-          xAxes: [{
-            ticks: {
-              autoSkip: true
-            }
-          }]
-        },
-        tooltipTemplate: function (value) {
-          // console.log(value);
-        }
-      }
-  });
-};
-
-(() => {
-  $("body").on("click", ".ind-ticker", function () {
-    let $this = $(this);
-    let ticker = $this.data("ticker");
-    $(".ind-ticker").removeClass("selected");
-    $this.addClass("selected");
-
-    fetchQuote(ticker);
-  });
-
-  $("#add_new #submit").on("click", function () {
-    let $input = $(this).parent().find("input"),
-        val = $input.val();
-
-    if (val.length > 0 && /^[A-z0-9\^\.]+/g.test(val)) {
-      watchlist.add(val, () => {
-        fetchQuote(val);
-        $input.val("");
-      });
-    }
-  });
+  fetchQuote(meta.ticker,  meta.unit);
 })();

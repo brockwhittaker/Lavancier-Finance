@@ -56,9 +56,10 @@ class UI {
 
       /* because of this, no symbol will repeat itself if it exists elsewhere.
       *  therefore, if AAPL is in the "watchlist", it won't also be in the
-         "recent" category.
+      *  "recent" category.
       */
-      if ($(`[name=${symbol}]`).length > 0) {
+
+      if ($(`[data-ticker='${symbol}']`).length > 0) {
         $(`[name=${symbol}]`).html(`
           <div class="ticker-name">
             ${o.symbol}
@@ -88,6 +89,11 @@ class UI {
         $sidebar.append(ind_ticker);
       }
     }
+  }
+
+  updateSentiment (symbol) {
+    $("#question_ticker").html(symbol.toUpperCase());
+    $("#question_body").html(`Do you think ${symbol} will go up or down within the next trading week?`);
   }
 
   drawRecent (data) {

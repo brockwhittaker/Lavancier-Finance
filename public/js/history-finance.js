@@ -1,7 +1,19 @@
 class HistoricalPricing {
-  constructor (ticker) {
+  // if weekly_view is 'true', then it will show ~ 5 days of data,
+  // otherwise it shows a year worth of data.
+  constructor (ticker, weekly_view) {
+    let range = (DAILY) => {
+      let d = new Date().getTime() / 1000;
+
+      return {start: (d - (60 * 60 * 24 * ((DAILY) ? 4 : 365))).toFixed(0), end: d.toFixed(0)};
+    };
+
+    let r = range(weekly_view);
+    // console.log(r.start, r.end);
+
     this.ticker = ticker;
-    this.url = `https://finance-yql.media.yahoo.com/v7/finance/chart/${ticker}?period2=1463739677&period1=1463394077&interval=1m&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com`;
+    this.url = `https://finance-yql.media.yahoo.com/v7/finance/chart/${ticker}?period2=${r.end}&period1=${r.start}&interval=${weekly_view ? "1m" : "1d"}&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com`;
+    //this.url = `https://finance-yql.media.yahoo.com/v7/finance/chart/${ticker}?period2=${r.end}&period1=${r.start}&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com`;
   }
 
   read (callback) {
@@ -34,9 +46,14 @@ class HistoricalPricing {
           response = JSON.parse(response).chart.result[0];
           this.data = response;
 
-          data[this.ticker] = response;
+          this.dataGranularity = this.data.meta.dataGranularity;
+          console.log("granularity", this.dataGranularity);
 
-          let quant = this.calculate(data[this.ticker]);
+          if (typeof data[this.ticker] !== "object") data[this.ticker] = {};
+
+          data[this.ticker][this.dataGranularity] = response;
+
+          let quant = this.calculate(data[this.ticker][this.dataGranularity]);
           let processed = this.formObject(quant);
 
           callback(
@@ -64,9 +81,8 @@ class HistoricalPricing {
       });
     };
 
-
     let residuals = filter($.quant.residuals(data));
-    let volatility = filter($.quant.rollingVolatility(residuals, 50, 1/(60*8.5)));
+    let volatility = filter($.quant.rollingVolatility(residuals, 50, this.dataGranularity == "1d" ? 1 : 1 / (60*8.5)));
     let skewness = filter($.quant.rollingSkewness(data, 50));
     let kurtosis = filter($.quant.rollingKurtosis(data, 50));
 

@@ -122,7 +122,7 @@ var $ = (function () {
           classes.splice(index, 1);
 
           return classes.join(" ");
-        } else return classes;
+        } else return classes.join(" ");
       },
       attr: {
         get: function (node, attr) {

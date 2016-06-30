@@ -25,3 +25,23 @@
 .green {
   color: #69B87D;
 }
+
+.il-block {
+  display: inline-block;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.clear-float {
+  clear: both;
+}
+
+.center {
+  text-align: center;
+}

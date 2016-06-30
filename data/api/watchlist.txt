@@ -1,1 +1,1 @@
-["^GSPC","AAPL","CRM","TGT","FB","GPRO","AMZN","TWTR","LNKD","MO"]
+{"watchlist":["^GSPC","AAPL","CRM","TGT","FB","GPRO","AMZN","TWTR","LNKD","MO","KO"],"recent":["CSCO"]}
